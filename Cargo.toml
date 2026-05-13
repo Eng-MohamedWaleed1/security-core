@@ -1,0 +1,12 @@
+[package]
+name = "waleed-security-core"
+version = "1.0.0"
+edition = "2021"
+
+[[bin]]
+name = "sender"
+path = "src/sender.rs"
+
+[[bin]]
+name = "receiver"
+path = "src/receiver.rs"
