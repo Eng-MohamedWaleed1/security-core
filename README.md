@@ -4,92 +4,67 @@
   <img src="https://img.shields.io/badge/Architect-Eng--MohamedWaleed1-blue?style=for-the-badge">
   <img src="https://img.shields.io/badge/Security-Level%204-red?style=for-the-badge">
   <img src="https://img.shields.io/badge/Memory-Zero--Copy-green?style=for-the-badge">
-  <img src="https://img.shields.io/badge/Dependencies-None-orange?style=for-the-badge">
+  <img src="https://img.shields.io/badge/Status-Final--Stable-gold?style=for-the-badge">
 </p>
 
 ---
 
 ## 🚀 System Overview
+A high-performance backend engine focused on secure data transformation. **WALEED-CORE** implements advanced memory management protocols to ensure immunity against common system vulnerabilities (buffer overflows, data races) — enforced at **compile time** via Rust's rigorous safety model.
 
-A high-performance backend engine focused on secure data transformation. **WALEED-CORE** implements advanced memory management protocols to ensure immunity against common system vulnerabilities including use-after-free, buffer overflows, and data races — enforced at **compile time**, not runtime.
+---
+
+## 📖 User Manual & Deployment
+This project is deployed as two independent security tools. You can download the ready-to-use binaries from the **[Releases]** section on the right.
+
+### **Phase 1: Encryption (The Sender)**
+1. Run `sender.exe`.
+2. Enter your secret text.
+3. The system generates a **Hexadecimal Cipher**. Copy it.
+4. Press **ENTER** to wipe memory and exit.
+
+### **Phase 2: Decryption (The Receiver)**
+1. Run `receiver.exe`.
+2. Paste the **Hexadecimal Cipher**.
+3. The system validates integrity and displays the **Original Message**.
+4. Press **ENTER** to safely clear the buffer.
 
 ---
 
 ## 🛠 Technical Specifications
-
 | Property | Implementation |
 |---|---|
-| **Memory Safety** | Enforced via Rust's Ownership model (affine type system) |
-| **Encryption** | Positional XOR stream cipher with bit-rotation diffusion |
-| **Integrity** | FNV-1a 64-bit checksum, verified on every decryption |
-| **Secure Erasure** | RAII-based zeroing via `Drop` trait — runs even on panic |
-| **Architecture** | Zero-cost abstractions, zero heap copies in hot path |
-| **Dependencies** | None — Rust Standard Library only |
-| **Test Coverage** | 16 tests across state, crypto, borrow, and edge-case categories |
+| **Memory Safety** | Enforced via Rust's Ownership & Affine type system |
+| **Encryption** | Positional XOR stream cipher with bit-rotation |
+| **Integrity Checks** | FNV-1a 64-bit checksum verification |
+| **Secure Erasure** | RAII-based zeroing via `Drop` trait (Zero-Fill) |
+| **Architecture** | Zero-cost abstractions, Zero heap copies |
 
 ---
 
 ## 📐 Core Design Principles
-
 ### 1. Ownership-Driven Lifecycle
-```
-load(plaintext: Vec<u8>)
-     │
-     └── Ownership MOVED into buffer
-         Caller's binding: INVALID
-         Heap copies: ZERO
-```
+The system ensures that plaintext ownership is **moved** into the secure buffer, rendering the original data binding invalid to prevent leaks.
 
-### 2. Lifetime-Bounded Immutable Views
-```rust
-let view: BufferView<'buf> = buffer.view();
-// 'buf guarantees view cannot outlive buffer
-// buffer is immutable for the entire view lifetime
-```
+### 2. Lifetime-Bounded Views
+Using Rust lifetimes (`<'buf>`), we guarantee that any read-only view of the sensitive data cannot outlive the secure container.
 
 ### 3. Deterministic State Machine
-```
-Idle ──load()──► Loaded ──encrypt()──► Encrypted ──decrypt()──► Decrypted
-  ▲                                                                    │
-  └──────────────────────── clear() ──────────────────────────────────┘
-```
-
----
-
-## 📦 Deployment
-
-```bash
-# Compile and run the engine boot sequence
-cargo run
-
-# Run the full test suite (16 tests)
-cargo test
-
-# Run with output visible
-cargo test -- --nocapture
-```
+`Idle ──load()──► Loaded ──encrypt()──► Encrypted ──decrypt()──► Decrypted`
 
 ---
 
 ## 📁 Repository Structure
-
-```
-waleed-security-core/
-├── Project.toml              # Package manifest
-├── README.md                 # This file
+security-core/
+├── Cargo.toml                # Package manifest
+├── README.md                 # System Overview & Manual
+├── SECURITY.md               # Privacy & Data Handling Policy
 ├── ENGINEERING_ANALYSIS.md   # Full technical design report
 └── src/
-    ├── main.rs               # Engine boot sequence and demo
-    └── engine.rs             # Core: SecureBuffer, cipher, integrity
-```
+├── sender.rs             # Encryption frontend
+├── receiver.rs           # Decryption frontend
+└── engine.rs             # Core: SecureBuffer & Crypto Logic
+
 
 ---
-
-## 📄 Documentation
-
-Full engineering analysis — including cipher design rationale, state machine specification, FNV-1a integrity layer, and production hardening roadmap — is provided in [`ENGINEERING_ANALYSIS.md`](./ENGINEERING_ANALYSIS.md).
-
----
-
-*© 2026 Eng-MohamedWaleed1 | Software Engineering Portfolio*
-*European University of Lefke — Faculty of Engineering*
+*© 2026 Eng-MohamedWaleed1 | European University of Lefke — Faculty of Engineering*
