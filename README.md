@@ -10,61 +10,97 @@
 ---
 
 ## 🚀 System Overview
+
 A high-performance backend engine focused on secure data transformation. **WALEED-CORE** implements advanced memory management protocols to ensure immunity against common system vulnerabilities (buffer overflows, data races) — enforced at **compile time** via Rust's rigorous safety model.
 
 ---
 
-## 📖 User Manual & Deployment
-This project is deployed as two independent security tools. You can download the ready-to-use binaries from the **[Releases]** section on the right.
+## ⚡ Quick Start — No Installation Required
 
-### **Phase 1: Encryption (The Sender)**
-1. Run `sender.exe`.
-2. Enter your secret text.
-3. The system generates a **Hexadecimal Cipher**. Copy it.
-4. Press **ENTER** to wipe memory and exit.
+> Download the ready-to-use `.exe` files from the **[Releases](../../releases)** section on the right side of this page.
 
-### **Phase 2: Decryption (The Receiver)**
-1. Run `receiver.exe`.
-2. Paste the **Hexadecimal Cipher**.
-3. The system validates integrity and displays the **Original Message**.
-4. Press **ENTER** to safely clear the buffer.
+### Step 1 — Sender (You)
+1. Download and run **`sender.exe`**
+2. If Windows shows a security warning → click **"More info"** then **"Run anyway"**
+3. Type your secret message and press **ENTER**
+4. Copy the **Hexadecimal Cipher** that appears
+5. Send it to the receiver via WhatsApp, Telegram, etc.
+
+### Step 2 — Receiver (Your contact)
+1. Download and run **`receiver.exe`**
+2. If Windows shows a security warning → click **"More info"** then **"Run anyway"**
+3. Paste the **Hexadecimal Cipher** and press **ENTER**
+4. The original message appears instantly
+5. Press **ENTER** to wipe memory and exit
+
+---
+
+## 🔨 Build From Source (Developers Only)
+
+> Requires [Rust](https://rustup.rs) installed on your machine.
+
+```bash
+git clone https://github.com/Eng-MohamedWaleed1/waleed-security-core.git
+cd waleed-security-core
+cargo build --release
+cargo run --bin sender
+cargo run --bin receiver
+```
+
+Compiled binaries appear at `target/release/sender.exe` and `target/release/receiver.exe`.
 
 ---
 
 ## 🛠 Technical Specifications
+
 | Property | Implementation |
 |---|---|
 | **Memory Safety** | Enforced via Rust's Ownership & Affine type system |
-| **Encryption** | Positional XOR stream cipher with bit-rotation |
-| **Integrity Checks** | FNV-1a 64-bit checksum verification |
-| **Secure Erasure** | RAII-based zeroing via `Drop` trait (Zero-Fill) |
-| **Architecture** | Zero-cost abstractions, Zero heap copies |
+| **Encryption** | Positional XOR stream cipher with bit-rotation diffusion |
+| **Integrity Checks** | FNV-1a 64-bit checksum verification on every decryption |
+| **Secure Erasure** | RAII-based zeroing via `Drop` trait (Zero-Fill on scope exit) |
+| **Architecture** | Zero-cost abstractions, zero heap copies in hot path |
+| **Dependencies** | None — Rust Standard Library only |
 
 ---
 
 ## 📐 Core Design Principles
-### 1. Ownership-Driven Lifecycle
-The system ensures that plaintext ownership is **moved** into the secure buffer, rendering the original data binding invalid to prevent leaks.
 
-### 2. Lifetime-Bounded Views
-Using Rust lifetimes (`<'buf>`), we guarantee that any read-only view of the sensitive data cannot outlive the secure container.
+### 1. Ownership-Driven Lifecycle
+Plaintext ownership is **moved** into the secure buffer — the original binding is invalidated immediately, preventing accidental leaks.
+
+### 2. Lifetime-Bounded Immutable Views
+Using Rust lifetimes (`<'buf>`), any read-only view of sensitive data is guaranteed by the compiler to not outlive its secure container.
 
 ### 3. Deterministic State Machine
-`Idle ──load()──► Loaded ──encrypt()──► Encrypted ──decrypt()──► Decrypted`
+
+```
+Idle ──load()──► Loaded ──encrypt()──► Encrypted ──decrypt()──► Decrypted
+  ▲                                                                    │
+  └──────────────────────── clear() / Drop ───────────────────────────┘
+```
 
 ---
 
 ## 📁 Repository Structure
-security-core/
-├── Cargo.toml                # Package manifest
-├── README.md                 # System Overview & Manual
-├── SECURITY.md               # Privacy & Data Handling Policy
-├── ENGINEERING_ANALYSIS.md   # Full technical design report
-└── src/
-├── sender.rs             # Encryption frontend
-├── receiver.rs           # Decryption frontend
-└── engine.rs             # Core: SecureBuffer & Crypto Logic
 
+```
+waleed-security-core/
+├── Cargo.toml
+├── README.md
+├── ENGINEERING_ANALYSIS.md
+└── src/
+    ├── engine.rs
+    ├── sender.rs
+    └── receiver.rs
+```
 
 ---
+
+## ⚠️ Security Notice
+
+The `.exe` files may trigger a Windows SmartScreen warning because they are not commercially code-signed. This is expected for open-source tools. The full source code is available above for independent verification.
+
+---
+
 *© 2026 Eng-MohamedWaleed1 | European University of Lefke — Faculty of Engineering*
